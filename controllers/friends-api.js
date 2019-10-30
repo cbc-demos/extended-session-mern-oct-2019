@@ -13,5 +13,14 @@ router.get('/', (req, res) => {
 })
 
 // route to delete one friend by its id
+router.delete('/:id', (req, res) => {
+  db.Friend.deleteOne({ _id: req.params.id })
+    .then(result => {
+      res.json(result)
+    })
+    .catch(error => {
+      res.status(400).json(error)
+    })
+})
 
 module.exports = router
