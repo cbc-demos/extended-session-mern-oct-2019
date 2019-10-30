@@ -1,21 +1,36 @@
-import React, { Component } from "react";
-import FriendCard from "./components/FriendCard";
-import Wrapper from "./components/Wrapper";
-import Title from "./components/Title";
-import friends from "./friends.json";
+import React, { Component } from 'react'
+import friendsApi from './util/friends-api'
+import FriendCard from './components/FriendCard'
+import Wrapper from './components/Wrapper'
+import Title from './components/Title'
 
 class App extends Component {
   // Setting this.state.friends to the friends json array
   state = {
-    friends
-  };
+    friends: []
+  }
+
+  componentDidMount() {
+    this.fetchFriends()
+  }
+
+  fetchFriends() {
+    friendsApi
+      .getFriends()
+      .then(response => {
+        this.setState({ friends: response.data })
+      })
+      .catch(error => console.log(error))
+  }
 
   removeFriend = id => {
-    // Filter this.state.friends for friends with an id not equal to the id being removed
-    const friends = this.state.friends.filter(friend => friend.id !== id);
-    // Set this.state.friends equal to the new friends array
-    this.setState({ friends });
-  };
+    // send request to delete
+    friendsApi
+      .deleteFriend(id)
+      // then fetchFriends
+      .then(() => this.fetchFriends())
+      .catch(error => console.log(error))
+  }
 
   // Map over this.state.friends and render a FriendCard component for each friend object
   render() {
@@ -25,8 +40,8 @@ class App extends Component {
         {this.state.friends.map(friend => (
           <FriendCard
             removeFriend={this.removeFriend}
-            id={friend.id}
-            key={friend.id}
+            id={friend._id}
+            key={friend._id}
             name={friend.name}
             image={friend.image}
             occupation={friend.occupation}
@@ -34,8 +49,8 @@ class App extends Component {
           />
         ))}
       </Wrapper>
-    );
+    )
   }
 }
 
-export default App;
+export default App
